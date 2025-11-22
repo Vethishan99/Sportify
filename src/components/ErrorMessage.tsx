@@ -1,23 +1,39 @@
-import { Feather } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 import { useTheme } from "../contexts/ThemeContext";
+import Icon from "./Icon";
 
 interface ErrorMessageProps {
   message: string;
 }
 
 export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message }) => {
-  const { colors } = useTheme();
+  const { colors, tokens, isDark } = useTheme();
+
+  const backgroundColor = isDark ? colors.error + "15" : colors.error + "10";
 
   return (
     <View
       style={[
         styles.container,
-        { backgroundColor: colors.card, borderColor: colors.error },
+        {
+          backgroundColor: backgroundColor,
+          borderColor: colors.error + "40",
+        },
       ]}
     >
-      <Feather name="alert-circle" size={24} color={colors.error} />
-      <Text style={[styles.message, { color: colors.error }]}>{message}</Text>
+      <View
+        style={[styles.iconContainer, { backgroundColor: colors.error + "20" }]}
+      >
+        <Icon name="alert-circle" size={18} color={colors.error} />
+      </View>
+      <Text
+        style={[
+          styles.message,
+          { color: colors.error, fontSize: tokens.fontSizes.sm },
+        ]}
+      >
+        {message}
+      </Text>
     </View>
   );
 };
@@ -26,14 +42,23 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    margin: 16,
-    padding: 16,
-    borderRadius: 8,
+    marginHorizontal: 16,
+    marginVertical: 8,
+    padding: 14,
+    borderRadius: 12,
     borderWidth: 1,
   },
+  iconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
   message: {
-    fontSize: 14,
-    marginLeft: 12,
     flex: 1,
+    fontWeight: "600",
+    lineHeight: 20,
   },
 });

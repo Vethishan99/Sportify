@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import {
@@ -8,18 +8,22 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { ErrorMessage, LoadingSpinner } from "../../src/components";
+import {
+  ErrorMessage,
+  Icon,
+  Input,
+  LoadingSpinner,
+} from "../../src/components";
 import { useTheme } from "../../src/contexts/ThemeContext";
 import { useAppDispatch, useAppSelector } from "../../src/redux/hooks";
 import { clearError, login } from "../../src/redux/slices/authSlice";
 import { loginSchema } from "../../src/utils/validation";
 
 export default function LoginScreen() {
-  const { colors } = useTheme();
+  const { colors, tokens } = useTheme();
   const dispatch = useAppDispatch();
   const { isLoading, error } = useAppSelector((state) => state.auth);
 
@@ -32,7 +36,6 @@ export default function LoginScreen() {
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear field error when user starts typing
     if (errors[field]) {
       setErrors((prev: any) => ({ ...prev, [field]: "" }));
     }
@@ -65,13 +68,10 @@ export default function LoginScreen() {
     }
   };
 
-  // Demo credentials info
   const showDemoCredentials = () => {
-    Alert.alert(
-      "Demo Credentials",
-      "You can use these demo credentials to login:\n\nUsername: emilys\nPassword: emilyspass\n\n(Powered by DummyJSON)",
-      [{ text: "OK" }]
-    );
+    Alert.alert("Demo Access", "Username: emilys\nPassword: emilyspass", [
+      { text: "Got it" },
+    ]);
   };
 
   return (
@@ -84,132 +84,126 @@ export default function LoginScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {/* Header with icon */}
         <View style={styles.header}>
-          <Feather name="activity" size={64} color={colors.primary} />
-          <Text style={[styles.title, { color: colors.text }]}>
-            Welcome to Sportify
+          <View
+            style={[
+              styles.iconContainer,
+              { backgroundColor: colors.primary + "15" },
+            ]}
+          >
+            <Icon name="zap" size={48} color={colors.primary} />
+          </View>
+          <Text
+            style={[
+              styles.title,
+              { color: colors.text, fontSize: tokens.fontSizes.display },
+            ]}
+          >
+            Sportify
           </Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            Login to view matches and track your favorites
+          <Text
+            style={[
+              styles.subtitle,
+              { color: colors.textSecondary, fontSize: tokens.fontSizes.md },
+            ]}
+          >
+            Your ultimate match tracker
           </Text>
         </View>
 
-        {/* Demo Credentials Button */}
+        {/* Demo Badge */}
         <TouchableOpacity
-          style={[styles.demoBadge, { backgroundColor: colors.secondary }]}
+          style={[
+            styles.demoBadge,
+            { backgroundColor: colors.secondary + "15" },
+          ]}
           onPress={showDemoCredentials}
         >
-          <Feather name="info" size={16} color="#FFFFFF" />
-          <Text style={styles.demoText}>Tap for demo credentials</Text>
+          <Icon name="key" size={16} color={colors.secondary} />
+          <Text style={[styles.demoText, { color: colors.secondary }]}>
+            Get Demo Credentials
+          </Text>
         </TouchableOpacity>
 
-        {/* Error Message */}
         {error && <ErrorMessage message={error} />}
 
-        {/* Form */}
         <View style={styles.form}>
           {/* Username Input */}
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>Username</Text>
-            <View
-              style={[
-                styles.inputWrapper,
-                {
-                  backgroundColor: colors.card,
-                  borderColor: errors.username ? colors.error : colors.border,
-                },
-              ]}
-            >
-              <Feather
-                name="user"
-                size={20}
-                color={colors.textSecondary}
-                style={styles.inputIcon}
-              />
-              <TextInput
-                style={[styles.input, { color: colors.text }]}
-                value={formData.username}
-                onChangeText={(value) => handleChange("username", value)}
-                placeholder="Enter your username"
-                placeholderTextColor={colors.textSecondary}
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-            </View>
-            {errors.username && (
-              <Text style={[styles.errorText, { color: colors.error }]}>
-                {errors.username}
-              </Text>
-            )}
-          </View>
+          <Input
+            label="Username"
+            leftIcon="user"
+            value={formData.username}
+            onChangeText={(value) => handleChange("username", value)}
+            placeholder="Enter username"
+            autoCapitalize="none"
+            autoCorrect={false}
+            error={errors.username}
+          />
 
           {/* Password Input */}
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>Password</Text>
-            <View
-              style={[
-                styles.inputWrapper,
-                {
-                  backgroundColor: colors.card,
-                  borderColor: errors.password ? colors.error : colors.border,
-                },
-              ]}
-            >
-              <Feather
-                name="lock"
-                size={20}
-                color={colors.textSecondary}
-                style={styles.inputIcon}
-              />
-              <TextInput
-                style={[styles.input, { color: colors.text }]}
-                value={formData.password}
-                onChangeText={(value) => handleChange("password", value)}
-                placeholder="Enter your password"
-                placeholderTextColor={colors.textSecondary}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-              />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                <Feather
-                  name={showPassword ? "eye-off" : "eye"}
-                  size={20}
-                  color={colors.textSecondary}
-                />
-              </TouchableOpacity>
-            </View>
-            {errors.password && (
-              <Text style={[styles.errorText, { color: colors.error }]}>
-                {errors.password}
-              </Text>
-            )}
-          </View>
+          <Input
+            label="Password"
+            leftIcon="lock"
+            rightIcon={showPassword ? "eye-off" : "eye"}
+            onRightIconPress={() => setShowPassword(!showPassword)}
+            value={formData.password}
+            onChangeText={(value) => handleChange("password", value)}
+            placeholder="Enter password"
+            secureTextEntry={!showPassword}
+            autoCapitalize="none"
+            error={errors.password}
+          />
 
-          {/* Login Button */}
+          {/* Login Button with Gradient */}
           <TouchableOpacity
-            style={[styles.loginButton, { backgroundColor: colors.primary }]}
+            style={[styles.loginButton, { shadowColor: colors.primary }]}
             onPress={handleLogin}
             disabled={isLoading}
+            activeOpacity={0.9}
           >
+            <LinearGradient
+              colors={tokens.gradients.subtlePrimary}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={[
+                StyleSheet.absoluteFill,
+                { borderRadius: tokens.radius.lg },
+              ]}
+            />
             {isLoading ? (
               <LoadingSpinner size="small" />
             ) : (
-              <Text style={styles.loginButtonText}>Login</Text>
+              <Text
+                style={[
+                  styles.loginButtonText,
+                  { fontSize: tokens.fontSizes.lg },
+                ]}
+              >
+                Sign In
+              </Text>
             )}
           </TouchableOpacity>
 
           {/* Register Link */}
           <View style={styles.registerContainer}>
             <Text
-              style={[styles.registerText, { color: colors.textSecondary }]}
+              style={[
+                styles.registerText,
+                { color: colors.textSecondary, fontSize: tokens.fontSizes.md },
+              ]}
             >
-              Don&apos;t have an account?{" "}
+              New to Sportify?
             </Text>
             <Link href="/auth/register" asChild>
               <TouchableOpacity>
-                <Text style={[styles.registerLink, { color: colors.primary }]}>
-                  Register here
+                <Text
+                  style={[
+                    styles.registerLink,
+                    { color: colors.primary, fontSize: tokens.fontSizes.md },
+                  ]}
+                >
+                  Create Account
                 </Text>
               </TouchableOpacity>
             </Link>
@@ -221,98 +215,52 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: 24,
+  container: { flex: 1 },
+  scrollContent: { flexGrow: 1, padding: 24, justifyContent: "center" },
+  header: { alignItems: "center", marginBottom: 40 },
+  iconContainer: {
+    width: 96,
+    height: 96,
+    borderRadius: 28,
     justifyContent: "center",
-  },
-  header: {
     alignItems: "center",
-    marginBottom: 32,
+    marginBottom: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "700",
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    textAlign: "center",
-    lineHeight: 20,
-  },
+  title: { fontWeight: "900", marginBottom: 8 },
+  subtitle: { textAlign: "center", fontWeight: "500" },
   demoBadge: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 24,
     alignSelf: "center",
-    marginBottom: 24,
+    marginBottom: 32,
     gap: 8,
   },
-  demoText: {
-    color: "#FFFFFF",
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  form: {
-    width: "100%",
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  inputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 12,
-    borderWidth: 1,
-    paddingHorizontal: 16,
-    height: 50,
-  },
-  inputIcon: {
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-  },
-  errorText: {
-    fontSize: 12,
-    marginTop: 4,
-  },
+  demoText: { fontSize: 13, fontWeight: "700" },
+  form: { width: "100%" },
   loginButton: {
-    height: 50,
-    borderRadius: 12,
+    height: 56,
+    borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
     marginTop: 8,
+    marginBottom: 16,
+    elevation: 6,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    overflow: "hidden",
   },
-  loginButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
+  loginButtonText: { color: "#FFFFFF", fontWeight: "800" },
   registerContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     marginTop: 24,
+    gap: 6,
   },
-  registerText: {
-    fontSize: 14,
-  },
-  registerLink: {
-    fontSize: 14,
-    fontWeight: "600",
-  },
+  registerText: { fontWeight: "500" },
+  registerLink: { fontWeight: "800" },
 });

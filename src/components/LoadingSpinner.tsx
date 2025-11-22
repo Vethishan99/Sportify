@@ -34,7 +34,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 24,
     justifyContent: "center",
     alignItems: "center",
   },

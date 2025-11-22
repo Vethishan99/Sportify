@@ -1,9 +1,9 @@
+import Icon from "@/src/components/Icon";
 import { useTheme } from "@/src/contexts/ThemeContext";
-import { Feather } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
 export default function TabsLayout() {
-  const { colors } = useTheme();
+  const { colors, tokens, isDark } = useTheme();
 
   return (
     <Tabs
@@ -13,13 +13,23 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
           backgroundColor: colors.card,
-          borderTopColor: colors.border,
-          borderTopWidth: 1,
+          borderTopWidth: 0,
+          elevation: 20,
+          shadowColor: isDark ? "#000" : colors.text,
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: isDark ? 0.3 : 0.08,
+          shadowRadius: 16,
+          height: 64,
+          paddingBottom: 8,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: "600",
+          fontSize: tokens.fontSizes.xs,
+          fontWeight: "700",
+          marginTop: 4,
+        },
+        tabBarIconStyle: {
+          marginTop: 4,
         },
       }}
     >
@@ -27,8 +37,8 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="home" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Icon name="home" size={24} color={color} />
           ),
         }}
       />
@@ -36,8 +46,8 @@ export default function TabsLayout() {
         name="favorites"
         options={{
           title: "Favorites",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="heart" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Icon name="heart" size={24} color={color} />
           ),
         }}
       />
@@ -45,8 +55,8 @@ export default function TabsLayout() {
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="user" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Icon name="user" size={24} color={color} />
           ),
         }}
       />

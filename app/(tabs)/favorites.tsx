@@ -19,7 +19,6 @@ export default function FavoritesScreen() {
 
   useEffect(() => {
     dispatch(loadFavorites());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleMatchPress = (match: Match) => {
@@ -48,17 +47,11 @@ export default function FavoritesScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View
-        style={[
-          styles.header,
-          { backgroundColor: colors.card, borderBottomColor: colors.border },
-        ]}
-      >
+      <View style={styles.header}>
         <Text style={[styles.title, { color: colors.text }]}>Favorites</Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
           {favoriteMatches.length}{" "}
-          {favoriteMatches.length === 1 ? "match" : "matches"} saved
+          {favoriteMatches.length === 1 ? "game" : "games"} tracked
         </Text>
       </View>
 
@@ -71,8 +64,8 @@ export default function FavoritesScreen() {
         ListEmptyComponent={
           <EmptyState
             icon="heart"
-            title="No favorites yet"
-            message="Start adding your favorite matches from the home screen"
+            title="No Favorites"
+            message="Tap the heart icon on a match to save it here."
           />
         }
       />
@@ -81,25 +74,22 @@ export default function FavoritesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   header: {
     paddingHorizontal: 20,
     paddingVertical: 16,
-    paddingTop: 48,
-    borderBottomWidth: 1,
+    paddingTop: 60,
   },
   title: {
-    fontSize: 28,
-    fontWeight: "700",
+    fontSize: 32,
+    fontWeight: "900",
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 16,
     marginTop: 4,
+    fontWeight: "500",
   },
   listContent: {
-    paddingVertical: 8,
-    flexGrow: 1,
+    paddingBottom: 20,
   },
 });

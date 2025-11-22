@@ -1,8 +1,9 @@
-import { Feather } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "../contexts/ThemeContext";
 import { Match } from "../types";
 import { formatDate, formatTime, getMatchStatus } from "../utils/helpers";
+import Icon from "./Icon";
 
 interface MatchCardProps {
   match: Match;
@@ -17,182 +18,296 @@ export const MatchCard: React.FC<MatchCardProps> = ({
   onFavoritePress,
   isFavorite = false,
 }) => {
-  const { colors } = useTheme();
+  const { colors, tokens, isDark } = useTheme();
   const status = getMatchStatus(
     match.strStatus,
     match.intHomeScore,
     match.intAwayScore
   );
 
+  const getStatusColor = () => {
+    switch (status) {
+      case "Completed":
+        return colors.success;
+      case "Upcoming":
+        return colors.secondary;
+      default:
+        return colors.warning;
+    }
+  };
+
   return (
     <TouchableOpacity
       style={[
         styles.card,
-        { backgroundColor: colors.card, borderColor: colors.border },
+        {
+          backgroundColor: colors.card,
+          shadowColor: isDark ? "#000" : colors.text,
+        },
       ]}
       onPress={onPress}
-      activeOpacity={0.7}
+      activeOpacity={0.9}
     >
-      {/* Favorite Button */}
-      {onFavoritePress && (
-        <TouchableOpacity
-          style={styles.favoriteButton}
-          onPress={onFavoritePress}
-        >
-          <Feather
-            name="heart"
-            size={20}
-            color={isFavorite ? colors.error : colors.textSecondary}
+      {/* Image with gradient overlay */}
+      {match.strThumb && (
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: match.strThumb }}
+            style={styles.thumbnail}
+            resizeMode="cover"
           />
-        </TouchableOpacity>
+          <LinearGradient
+            colors={["transparent", colors.card]}
+            style={styles.imageGradient}
+          />
+        </View>
       )}
 
-      {/* League Badge */}
-      <View style={[styles.badge, { backgroundColor: colors.primary }]}>
-        <Text style={styles.badgeText}>{match.strLeague}</Text>
-      </View>
+      <View style={[styles.content, { paddingHorizontal: tokens.spacing.lg }]}>
+        {/* Header with league badge and favorite */}
+        <View style={styles.header}>
+          <View
+            style={[
+              styles.leagueBadge,
+              { backgroundColor: colors.primary + "15" },
+            ]}
+          >
+            <Text
+              style={[
+                styles.leagueText,
+                { color: colors.primary, fontSize: tokens.fontSizes.xs },
+              ]}
+            >
+              {match.strLeague}
+            </Text>
+          </View>
+          {onFavoritePress && (
+            <TouchableOpacity
+              style={styles.favoriteButton}
+              onPress={onFavoritePress}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Icon
+                name={isFavorite ? "heart" : "heart"}
+                size={22}
+                color={isFavorite ? colors.error : colors.textSecondary}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
 
-      {/* Match Info */}
-      <View style={styles.matchInfo}>
-        <Text style={[styles.date, { color: colors.textSecondary }]}>
-          {formatDate(match.dateEvent)} • {formatTime(match.strTime)}
-        </Text>
-        <Text style={[styles.matchTitle, { color: colors.text }]}>
+        {/* Match title */}
+        <Text
+          style={[
+            styles.matchTitle,
+            { color: colors.text, fontSize: tokens.fontSizes.lg },
+          ]}
+          numberOfLines={2}
+        >
           {match.strEvent}
         </Text>
 
-        {/* Teams */}
+        {/* Date & Time */}
+        <View style={styles.dateRow}>
+          <Icon name="clock" size={14} color={colors.textSecondary} />
+          <Text
+            style={[
+              styles.dateText,
+              {
+                color: colors.textSecondary,
+                fontSize: tokens.fontSizes.sm,
+                marginLeft: tokens.spacing.xs,
+              },
+            ]}
+          >
+            {formatDate(match.dateEvent)} • {formatTime(match.strTime)}
+          </Text>
+        </View>
+
+        {/* Divider */}
+        <View
+          style={[
+            styles.divider,
+            {
+              backgroundColor: colors.border,
+              marginVertical: tokens.spacing.md,
+            },
+          ]}
+        />
+
+        {/* Teams and scores */}
         <View style={styles.teamsContainer}>
           <View style={styles.teamRow}>
-            <Text style={[styles.teamName, { color: colors.text }]}>
+            <Text
+              style={[
+                styles.teamName,
+                { color: colors.text, fontSize: tokens.fontSizes.md },
+              ]}
+              numberOfLines={1}
+            >
               {match.strHomeTeam}
             </Text>
             {match.intHomeScore !== null && (
-              <Text style={[styles.score, { color: colors.text }]}>
+              <Text
+                style={[
+                  styles.score,
+                  { color: colors.primary, fontSize: tokens.fontSizes.xl },
+                ]}
+              >
                 {match.intHomeScore}
               </Text>
             )}
           </View>
+
           <View style={styles.teamRow}>
-            <Text style={[styles.teamName, { color: colors.text }]}>
+            <Text
+              style={[
+                styles.teamName,
+                { color: colors.text, fontSize: tokens.fontSizes.md },
+              ]}
+              numberOfLines={1}
+            >
               {match.strAwayTeam}
             </Text>
             {match.intAwayScore !== null && (
-              <Text style={[styles.score, { color: colors.text }]}>
+              <Text
+                style={[
+                  styles.score,
+                  { color: colors.primary, fontSize: tokens.fontSizes.xl },
+                ]}
+              >
                 {match.intAwayScore}
               </Text>
             )}
           </View>
         </View>
 
-        {/* Status Badge */}
+        {/* Status badge */}
         <View
           style={[
             styles.statusBadge,
             {
-              backgroundColor:
-                status === "Completed"
-                  ? colors.success
-                  : status === "Upcoming"
-                  ? colors.secondary
-                  : colors.textSecondary,
+              backgroundColor: getStatusColor() + "15",
+              marginTop: tokens.spacing.md,
             },
           ]}
         >
-          <Text style={styles.statusText}>{status}</Text>
+          <View
+            style={[styles.statusDot, { backgroundColor: getStatusColor() }]}
+          />
+          <Text
+            style={[
+              styles.statusText,
+              { color: getStatusColor(), fontSize: tokens.fontSizes.xs },
+            ]}
+          >
+            {status}
+          </Text>
         </View>
       </View>
-
-      {/* Thumbnail */}
-      {match.strThumb && (
-        <Image
-          source={{ uri: match.strThumb }}
-          style={styles.thumbnail}
-          resizeMode="cover"
-        />
-      )}
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 12,
+    borderRadius: 16,
     marginHorizontal: 16,
     marginVertical: 8,
-    padding: 16,
-    borderWidth: 1,
-    elevation: 2,
-    shadowColor: "#000",
+    overflow: "hidden",
+    elevation: 4,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+  },
+  imageContainer: {
+    width: "100%",
+    height: 140,
+    position: "relative",
+  },
+  thumbnail: {
+    width: "100%",
+    height: "100%",
+  },
+  imageGradient: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+  },
+  content: {
+    paddingVertical: 16,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  leagueBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  leagueText: {
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   favoriteButton: {
-    position: "absolute",
-    top: 12,
-    right: 12,
-    zIndex: 10,
     padding: 4,
   },
-  badge: {
-    alignSelf: "flex-start",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
+  matchTitle: {
+    fontWeight: "800",
+    lineHeight: 24,
     marginBottom: 8,
   },
-  badgeText: {
-    color: "#FFFFFF",
-    fontSize: 12,
-    fontWeight: "600",
+  dateRow: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  matchInfo: {
-    marginBottom: 12,
+  dateText: {
+    fontWeight: "500",
   },
-  date: {
-    fontSize: 12,
-    marginBottom: 4,
-  },
-  matchTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 12,
+  divider: {
+    height: 1,
   },
   teamsContainer: {
-    marginBottom: 12,
+    gap: 12,
   },
   teamRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 6,
   },
   teamName: {
-    fontSize: 14,
     fontWeight: "600",
     flex: 1,
+    marginRight: 12,
   },
   score: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginLeft: 12,
+    fontWeight: "800",
+    minWidth: 30,
+    textAlign: "right",
   },
   statusBadge: {
+    flexDirection: "row",
+    alignItems: "center",
     alignSelf: "flex-start",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 6,
   },
   statusText: {
-    color: "#FFFFFF",
-    fontSize: 11,
-    fontWeight: "600",
-  },
-  thumbnail: {
-    width: "100%",
-    height: 150,
-    borderRadius: 8,
-    marginTop: 8,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
 });

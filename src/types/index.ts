@@ -26,6 +26,7 @@ export interface Match {
   strAwayTeam: string;
   intHomeScore: string | null;
   intAwayScore: string | null;
+  intRound?: string | number | null;
   strStatus: string;
   strThumb: string | null;
   strSquare: string | null;
@@ -81,4 +82,49 @@ export interface ThemeColors {
   error: string;
   success: string;
   warning: string;
+}
+
+// Design tokens (non-color) for consistent UI styling
+export interface ThemeTokens {
+  radius: {
+    xs: number;
+    sm: number;
+    md: number;
+    lg: number;
+    xl: number;
+    pill: number;
+  };
+  spacing: {
+    xxs: number;
+    xs: number;
+    sm: number;
+    md: number;
+    lg: number;
+    xl: number;
+    xxl: number;
+  };
+  fontSizes: {
+    xs: number;
+    sm: number;
+    md: number;
+    lg: number;
+    xl: number;
+    display: number;
+  };
+  gradients: {
+    subtlePrimary: string[];
+    subtleSecondary: string[];
+    surface: string[];
+  };
+  elevation: {
+    none: number;
+    sm: number;
+    md: number;
+    lg: number;
+  };
+  transitions: {
+    fast: number;
+    normal: number;
+    slow: number;
+  };
 }

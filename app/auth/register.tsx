@@ -35,7 +35,6 @@ export default function RegisterScreen() {
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear field error when user starts typing
     if (errors[field]) {
       setErrors((prev: any) => ({ ...prev, [field]: "" }));
     }
@@ -78,33 +77,26 @@ export default function RegisterScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
         <View style={styles.header}>
-          <Feather name="user-plus" size={56} color={colors.primary} />
           <Text style={[styles.title, { color: colors.text }]}>
             Create Account
           </Text>
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            Join Sportify to track your favorite matches
+            Join the community
           </Text>
         </View>
 
-        {/* Error Message */}
         {error && <ErrorMessage message={error} />}
 
-        {/* Form */}
         <View style={styles.form}>
-          {/* Full Name Input */}
+          {/* Full Name */}
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>
-              Full Name
-            </Text>
             <View
               style={[
                 styles.inputWrapper,
                 {
                   backgroundColor: colors.card,
-                  borderColor: errors.fullName ? colors.error : colors.border,
+                  borderColor: errors.fullName ? colors.error : "transparent",
                 },
               ]}
             >
@@ -118,7 +110,7 @@ export default function RegisterScreen() {
                 style={[styles.input, { color: colors.text }]}
                 value={formData.fullName}
                 onChangeText={(value) => handleChange("fullName", value)}
-                placeholder="Enter your full name"
+                placeholder="Full Name"
                 placeholderTextColor={colors.textSecondary}
                 autoCapitalize="words"
               />
@@ -130,15 +122,14 @@ export default function RegisterScreen() {
             )}
           </View>
 
-          {/* Email Input */}
+          {/* Email */}
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>Email</Text>
             <View
               style={[
                 styles.inputWrapper,
                 {
                   backgroundColor: colors.card,
-                  borderColor: errors.email ? colors.error : colors.border,
+                  borderColor: errors.email ? colors.error : "transparent",
                 },
               ]}
             >
@@ -152,7 +143,7 @@ export default function RegisterScreen() {
                 style={[styles.input, { color: colors.text }]}
                 value={formData.email}
                 onChangeText={(value) => handleChange("email", value)}
-                placeholder="Enter your email"
+                placeholder="Email Address"
                 placeholderTextColor={colors.textSecondary}
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -166,15 +157,14 @@ export default function RegisterScreen() {
             )}
           </View>
 
-          {/* Username Input */}
+          {/* Username */}
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>Username</Text>
             <View
               style={[
                 styles.inputWrapper,
                 {
                   backgroundColor: colors.card,
-                  borderColor: errors.username ? colors.error : colors.border,
+                  borderColor: errors.username ? colors.error : "transparent",
                 },
               ]}
             >
@@ -188,7 +178,7 @@ export default function RegisterScreen() {
                 style={[styles.input, { color: colors.text }]}
                 value={formData.username}
                 onChangeText={(value) => handleChange("username", value)}
-                placeholder="Choose a username"
+                placeholder="Username"
                 placeholderTextColor={colors.textSecondary}
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -201,15 +191,14 @@ export default function RegisterScreen() {
             )}
           </View>
 
-          {/* Password Input */}
+          {/* Password */}
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>Password</Text>
             <View
               style={[
                 styles.inputWrapper,
                 {
                   backgroundColor: colors.card,
-                  borderColor: errors.password ? colors.error : colors.border,
+                  borderColor: errors.password ? colors.error : "transparent",
                 },
               ]}
             >
@@ -223,7 +212,7 @@ export default function RegisterScreen() {
                 style={[styles.input, { color: colors.text }]}
                 value={formData.password}
                 onChangeText={(value) => handleChange("password", value)}
-                placeholder="Create a password"
+                placeholder="Password"
                 placeholderTextColor={colors.textSecondary}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
@@ -243,11 +232,8 @@ export default function RegisterScreen() {
             )}
           </View>
 
-          {/* Confirm Password Input */}
+          {/* Confirm Password */}
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>
-              Confirm Password
-            </Text>
             <View
               style={[
                 styles.inputWrapper,
@@ -255,12 +241,12 @@ export default function RegisterScreen() {
                   backgroundColor: colors.card,
                   borderColor: errors.confirmPassword
                     ? colors.error
-                    : colors.border,
+                    : "transparent",
                 },
               ]}
             >
               <Feather
-                name="lock"
+                name="check-circle"
                 size={20}
                 color={colors.textSecondary}
                 style={styles.inputIcon}
@@ -269,7 +255,7 @@ export default function RegisterScreen() {
                 style={[styles.input, { color: colors.text }]}
                 value={formData.confirmPassword}
                 onChangeText={(value) => handleChange("confirmPassword", value)}
-                placeholder="Confirm your password"
+                placeholder="Confirm Password"
                 placeholderTextColor={colors.textSecondary}
                 secureTextEntry={!showConfirmPassword}
                 autoCapitalize="none"
@@ -291,27 +277,29 @@ export default function RegisterScreen() {
             )}
           </View>
 
-          {/* Register Button */}
           <TouchableOpacity
-            style={[styles.registerButton, { backgroundColor: colors.primary }]}
+            style={[
+              styles.registerButton,
+              { backgroundColor: colors.primary, shadowColor: colors.primary },
+            ]}
             onPress={handleRegister}
             disabled={isLoading}
           >
             {isLoading ? (
               <LoadingSpinner size="small" />
             ) : (
-              <Text style={styles.registerButtonText}>Create Account</Text>
+              <Text style={styles.registerButtonText}>Sign Up</Text>
             )}
           </TouchableOpacity>
 
-          {/* Login Link */}
           <View style={styles.loginContainer}>
             <Text style={[styles.loginText, { color: colors.textSecondary }]}>
-              Already have an account?{" "}
+              Already have an account?
             </Text>
             <Link href="/auth/login" asChild>
               <TouchableOpacity>
                 <Text style={[styles.loginLink, { color: colors.primary }]}>
+                  {" "}
                   Login here
                 </Text>
               </TouchableOpacity>
@@ -324,82 +312,42 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: 24,
-    paddingTop: 40,
-  },
-  header: {
-    alignItems: "center",
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "700",
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    textAlign: "center",
-    lineHeight: 20,
-  },
-  form: {
-    width: "100%",
-  },
-  inputContainer: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
+  container: { flex: 1 },
+  scrollContent: { flexGrow: 1, padding: 24, paddingTop: 60 },
+  header: { marginBottom: 32 },
+  title: { fontSize: 32, fontWeight: "900", marginBottom: 8 },
+  subtitle: { fontSize: 16 },
+  form: { width: "100%" },
+  inputContainer: { marginBottom: 16 },
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 12,
-    borderWidth: 1,
+    borderRadius: 16,
     paddingHorizontal: 16,
-    height: 50,
+    height: 56,
+    borderWidth: 1,
   },
-  inputIcon: {
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-  },
-  errorText: {
-    fontSize: 12,
-    marginTop: 4,
-  },
+  inputIcon: { marginRight: 12 },
+  input: { flex: 1, fontSize: 16, fontWeight: "500" },
+  errorText: { fontSize: 12, marginTop: 4, marginLeft: 4 },
   registerButton: {
-    height: 50,
-    borderRadius: 12,
+    height: 56,
+    borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 8,
+    marginTop: 16,
+    elevation: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
-  registerButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
+  registerButtonText: { color: "#FFFFFF", fontSize: 18, fontWeight: "700" },
   loginContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 24,
+    marginTop: 32,
   },
-  loginText: {
-    fontSize: 14,
-  },
-  loginLink: {
-    fontSize: 14,
-    fontWeight: "600",
-  },
+  loginText: { fontSize: 15 },
+  loginLink: { fontSize: 15, fontWeight: "700" },
 });

@@ -36,7 +36,7 @@ export default function ProfileScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
+      {/* Header - Changed to a clean, safe-area-friendly view */}
       <View
         style={[
           styles.header,
@@ -51,12 +51,17 @@ export default function ProfileScreen() {
         <View
           style={[
             styles.card,
-            { backgroundColor: colors.card, borderColor: colors.border },
+            {
+              backgroundColor: colors.card,
+              // New shadow for depth
+              shadowColor: colors.text,
+            },
           ]}
         >
           <View
             style={[
               styles.avatarContainer,
+              // Avatar uses the primary color background
               { backgroundColor: colors.primary },
             ]}
           >
@@ -83,7 +88,10 @@ export default function ProfileScreen() {
         <View
           style={[
             styles.card,
-            { backgroundColor: colors.card, borderColor: colors.border },
+            {
+              backgroundColor: colors.card,
+              shadowColor: colors.text,
+            },
           ]}
         >
           <Text style={[styles.cardTitle, { color: colors.text }]}>
@@ -91,12 +99,12 @@ export default function ProfileScreen() {
           </Text>
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
-              <Feather name="heart" size={24} color={colors.primary} />
+              <Feather name="heart" size={28} color={colors.error} />
               <Text style={[styles.statValue, { color: colors.text }]}>
                 {favoriteMatches.length}
               </Text>
               <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
-                Favorites
+                Favorite Matches
               </Text>
             </View>
           </View>
@@ -106,20 +114,27 @@ export default function ProfileScreen() {
         <View
           style={[
             styles.card,
-            { backgroundColor: colors.card, borderColor: colors.border },
+            {
+              backgroundColor: colors.card,
+              shadowColor: colors.text,
+            },
           ]}
         >
           <Text style={[styles.cardTitle, { color: colors.text }]}>
             Settings
           </Text>
 
-          {/* Dark Mode Toggle */}
-          <TouchableOpacity style={styles.settingItem} onPress={toggleTheme}>
+          {/* Dark Mode Toggle - Integrated with the new primary color */}
+          <TouchableOpacity
+            style={styles.settingItem}
+            onPress={toggleTheme}
+            activeOpacity={0.7}
+          >
             <View style={styles.settingLeft}>
               <Feather
                 name={isDark ? "moon" : "sun"}
-                size={20}
-                color={colors.textSecondary}
+                size={22}
+                color={colors.primary} // Icon uses primary color
                 style={styles.settingIcon}
               />
               <Text style={[styles.settingText, { color: colors.text }]}>
@@ -129,6 +144,7 @@ export default function ProfileScreen() {
             <View
               style={[
                 styles.switch,
+                // Background is primary when active, border color when inactive
                 { backgroundColor: isDark ? colors.primary : colors.border },
               ]}
             >
@@ -136,6 +152,7 @@ export default function ProfileScreen() {
                 style={[
                   styles.switchThumb,
                   { backgroundColor: colors.card },
+                  // Thumb position based on state
                   isDark && styles.switchThumbActive,
                 ]}
               />
@@ -147,7 +164,10 @@ export default function ProfileScreen() {
         <View
           style={[
             styles.card,
-            { backgroundColor: colors.card, borderColor: colors.border },
+            {
+              backgroundColor: colors.card,
+              shadowColor: colors.text,
+            },
           ]}
         >
           <Text style={[styles.cardTitle, { color: colors.text }]}>About</Text>
@@ -169,10 +189,11 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Logout Button */}
+        {/* Logout Button - prominent and uses error color */}
         <TouchableOpacity
           style={[styles.logoutButton, { backgroundColor: colors.error }]}
           onPress={handleLogout}
+          activeOpacity={0.8}
         >
           <Feather name="log-out" size={20} color="#FFFFFF" />
           <Text style={styles.logoutText}>Logout</Text>
@@ -180,7 +201,8 @@ export default function ProfileScreen() {
 
         <View style={styles.footer}>
           <Text style={[styles.footerText, { color: colors.textSecondary }]}>
-            Made with ❤️ for IN3210
+            Made with <Feather name="heart" size={10} color={colors.error} />{" "}
+            for IN3210
           </Text>
         </View>
       </ScrollView>
@@ -192,25 +214,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  // Simplified Header for modern full-bleed look
   header: {
     paddingHorizontal: 20,
     paddingVertical: 16,
-    paddingTop: 48,
-    borderBottomWidth: 1,
+    paddingTop: 50,
+    borderBottomWidth: 0, // Removed border
   },
   title: {
-    fontSize: 28,
-    fontWeight: "700",
+    fontSize: 32, // Larger title
+    fontWeight: "900", // Extra bold
   },
   content: {
     flex: 1,
     padding: 16,
   },
   card: {
-    borderRadius: 16,
+    borderRadius: 16, // More rounded corners
     padding: 20,
     marginBottom: 16,
-    borderWidth: 1,
+    borderWidth: 0, // Removed border
+    elevation: 8, // Stronger shadow
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
   },
   avatarContainer: {
     width: 80,
@@ -228,7 +255,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 24,
-    fontWeight: "700",
+    fontWeight: "800",
     textAlign: "center",
     marginBottom: 4,
   },
@@ -236,46 +263,53 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
     marginBottom: 2,
+    fontWeight: "500",
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: "700",
+    fontSize: 20, // Larger card title
+    fontWeight: "800",
     marginBottom: 16,
   },
   statsRow: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "center", // Centered stats
   },
   statItem: {
     alignItems: "center",
+    padding: 10,
+    minWidth: 100,
   },
   statValue: {
-    fontSize: 24,
-    fontWeight: "700",
+    fontSize: 30, // Larger stat value
+    fontWeight: "800",
     marginTop: 8,
   },
   statLabel: {
     fontSize: 12,
     marginTop: 4,
+    fontWeight: "600",
   },
   settingItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: 16, // Increased vertical padding
+    borderBottomWidth: 1, // Subtle separator for settings list
+    borderBottomColor: "#F0F0F0", // Light gray separator
   },
   settingLeft: {
     flexDirection: "row",
     alignItems: "center",
   },
   settingIcon: {
-    marginRight: 12,
+    marginRight: 16,
   },
   settingText: {
     fontSize: 16,
+    fontWeight: "600",
   },
   switch: {
-    width: 50,
+    width: 48, // Adjusted width
     height: 28,
     borderRadius: 14,
     padding: 2,
@@ -292,7 +326,7 @@ const styles = StyleSheet.create({
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 12,
+    paddingVertical: 10,
   },
   infoLabel: {
     fontSize: 14,
@@ -305,15 +339,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 16,
+    paddingVertical: 18, // Increased padding
     borderRadius: 12,
     marginBottom: 16,
     gap: 8,
   },
   logoutText: {
     color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 18, // Larger text
+    fontWeight: "700",
   },
   footer: {
     paddingVertical: 20,

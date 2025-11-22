@@ -13,12 +13,13 @@ import {
 } from "@/src/redux/slices/favoritesSlice";
 import { fetchPopularMatches } from "@/src/redux/slices/matchesSlice";
 import { Match } from "@/src/types";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
-  const { colors } = useTheme();
+  const { colors, tokens } = useTheme();
   const dispatch = useAppDispatch();
   const { matches, isLoading, error } = useAppSelector(
     (state) => state.matches
@@ -28,7 +29,6 @@ export default function HomeScreen() {
 
   useEffect(() => {
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadData = () => {
@@ -77,22 +77,28 @@ export default function HomeScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View
-        style={[
-          styles.header,
-          { backgroundColor: colors.card, borderBottomColor: colors.border },
-        ]}
+      {/* Modern gradient header */}
+      <LinearGradient
+        colors={[colors.card, colors.background]}
+        style={styles.header}
       >
-        <View>
-          <Text style={[styles.greeting, { color: colors.textSecondary }]}>
-            Welcome back,
-          </Text>
-          <Text style={[styles.username, { color: colors.text }]}>
-            {user?.fullName || "User"}
-          </Text>
-        </View>
-      </View>
+        <Text
+          style={[
+            styles.greeting,
+            { color: colors.textSecondary, fontSize: tokens.fontSizes.md },
+          ]}
+        >
+          Welcome back,
+        </Text>
+        <Text
+          style={[
+            styles.username,
+            { color: colors.text, fontSize: tokens.fontSizes.display },
+          ]}
+        >
+          {user?.fullName || "Fan"} 👋
+        </Text>
+      </LinearGradient>
 
       {error && <ErrorMessage message={error} />}
 
@@ -113,9 +119,9 @@ export default function HomeScreen() {
         ListEmptyComponent={
           !isLoading ? (
             <EmptyState
-              icon="calendar"
-              title="No matches found"
-              message="Pull down to refresh and load matches"
+              icon="Calendar"
+              title="No Matches"
+              message="Check back later for upcoming games!"
             />
           ) : null
         }
@@ -125,25 +131,21 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   header: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    paddingTop: 48,
-    borderBottomWidth: 1,
+    paddingHorizontal: 24,
+    paddingTop: 60,
+    paddingBottom: 24,
   },
   greeting: {
-    fontSize: 14,
+    fontWeight: "500",
+    marginBottom: 4,
   },
   username: {
-    fontSize: 24,
-    fontWeight: "700",
-    marginTop: 4,
+    fontWeight: "900",
   },
   listContent: {
-    paddingVertical: 8,
-    flexGrow: 1,
+    paddingTop: 8,
+    paddingBottom: 24,
   },
 });
