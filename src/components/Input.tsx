@@ -5,6 +5,7 @@ import {
   Text,
   TextInput,
   TextInputProps,
+  TouchableOpacity,
   View,
 } from "react-native";
 import Icon from "./Icon";
@@ -59,9 +60,13 @@ export const Input: React.FC<InputProps> = ({
           {...props}
         />
         {rightIcon && (
-          <View style={styles.iconRight}>
+          <TouchableOpacity
+            style={styles.iconRight}
+            onPress={onRightIconPress}
+            disabled={!onRightIconPress}
+          >
             <Icon name={rightIcon} size={20} color={colors.textSecondary} />
-          </View>
+          </TouchableOpacity>
         )}
       </View>
       {error && (
