@@ -2,8 +2,43 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AUTH_STORAGE_KEY = "@sportify_auth_token";
 const USER_STORAGE_KEY = "@sportify_user";
+const REGISTERED_USERS_KEY = "@sportify_registered_users";
 
 export const storageUtils = {
+  // Registered Users (Mock Persistence)
+  saveRegisteredUser: async (user: any): Promise<void> => {
+    try {
+      const existingUsersJson = await AsyncStorage.getItem(REGISTERED_USERS_KEY);
+      const existingUsers = existingUsersJson ? JSON.parse(existingUsersJson) : [];
+      
+      // Check if user already exists
+      const userIndex = existingUsers.findIndex((u: any) => u.username === user.username);
+      if (userIndex >= 0) {
+        existingUsers[userIndex] = user; // Update existing
+      } else {
+        existingUsers.push(user); // Add new
+      }
+      
+      await AsyncStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(existingUsers));
+    } catch (error) {
+      console.error("Failed to save registered user:", error);
+      throw error;
+    }
+  },
+
+  getRegisteredUser: async (username: string): Promise<any | null> => {
+    try {
+      const existingUsersJson = await AsyncStorage.getItem(REGISTERED_USERS_KEY);
+      if (!existingUsersJson) return null;
+      
+      const existingUsers = JSON.parse(existingUsersJson);
+      return existingUsers.find((u: any) => u.username === username) || null;
+    } catch (error) {
+      console.error("Failed to get registered user:", error);
+      return null;
+    }
+  },
+
   // Auth token
   saveAuthToken: async (token: string): Promise<void> => {
     try {

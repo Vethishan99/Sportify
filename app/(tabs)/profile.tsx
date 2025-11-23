@@ -1,11 +1,13 @@
 import { useTheme } from "@/src/contexts/ThemeContext";
 import { useAppDispatch, useAppSelector } from "@/src/redux/hooks";
-import { logout } from "@/src/redux/slices/authSlice";
+import { forceLogout, logout } from "@/src/redux/slices/authSlice";
 import { clearFavorites } from "@/src/redux/slices/favoritesSlice";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useEffect } from "react";
 import {
   Alert,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,23 +18,61 @@ import {
 export default function ProfileScreen() {
   const { colors, isDark, toggleTheme } = useTheme();
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const { favoriteMatches } = useAppSelector((state) => state.favorites);
 
-  const handleLogout = () => {
-    Alert.alert("Logout", "Are you sure you want to logout?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Logout",
-        style: "destructive",
-        onPress: async () => {
-          await dispatch(logout());
-          await dispatch(clearFavorites());
-          router.replace("/auth/login");
-        },
-      },
-    ]);
+  const performLogout = async () => {
+    try {
+      console.log("Performing logout...");
+      const action = await dispatch(logout());
+      if (logout.fulfilled.match(action)) {
+        console.log("Logout thunk fulfilled");
+      } else {
+        console.warn("Logout thunk rejected, forcing local logout");
+        dispatch(forceLogout());
+      }
+    } catch (e) {
+      console.error("Logout dispatch error, forcing local logout", e);
+      dispatch(forceLogout());
+    }
+    await dispatch(clearFavorites());
+    // Extra storage safety: try clearing again in case thunk failed
+    // (non-blocking) dynamic import to avoid circular deps
+    import("@/src/utils/storage").then((m) => {
+      m.storageUtils.clearAuthData().catch((err: any) => {
+        console.error("Secondary storage clear failed", err);
+      });
+    });
+    router.replace("/auth/login");
   };
+
+  const handleLogout = () => {
+    if (Platform.OS === "web") {
+      if (window.confirm("Are you sure you want to logout?")) {
+        performLogout();
+      }
+    } else {
+      Alert.alert("Logout", "Are you sure you want to logout?", [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Logout",
+          style: "destructive",
+          onPress: performLogout,
+        },
+      ]);
+    }
+  };
+
+  // Guard: if auth state becomes unauthenticated anywhere, ensure user is moved to login
+  useEffect(() => {
+    if (!isAuthenticated && user === null) {
+      // Only redirect if we're truly logged out (not initial load)
+      const timer = setTimeout(() => {
+        router.replace("/auth/login");
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, user]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

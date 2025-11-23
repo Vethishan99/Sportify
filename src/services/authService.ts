@@ -24,6 +24,27 @@ interface AuthResponse {
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
     try {
+      // Check local registered users first (Mock Persistence)
+      const localUser = await storageUtils.getRegisteredUser(credentials.username);
+      if (localUser && localUser.password === credentials.password) {
+        // Generate a dummy token for local user
+        const token = "local_token_" + Math.random().toString(36).substring(7);
+        
+        // Create user object without password
+        const user: User = {
+          id: localUser.id,
+          username: localUser.username,
+          email: localUser.email,
+          fullName: localUser.fullName,
+        };
+
+        // Store token and user
+        await storageUtils.saveAuthToken(token);
+        await storageUtils.saveUser(user);
+
+        return { user, token };
+      }
+
       // DummyJSON login endpoint
       const response = await axios.post(`${AUTH_API_BASE}/auth/login`, {
         username: credentials.username,
@@ -75,6 +96,12 @@ export const authService = {
         email: data.email,
         fullName: data.fullName,
       };
+
+      // Save to local registered users list (Mock Persistence)
+      await storageUtils.saveRegisteredUser({
+        ...user,
+        password: data.password // Store password for login verification
+      });
 
       // Generate a dummy token
       const token = "dummy_token_" + Math.random().toString(36).substring(7);
